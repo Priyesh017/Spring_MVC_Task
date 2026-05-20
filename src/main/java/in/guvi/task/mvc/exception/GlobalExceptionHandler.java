@@ -12,48 +12,85 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.time.LocalDateTime;
 
+/**
+ * Global Exception Interceptor for the application.
+ * Uses @RestControllerAdvice to catch exceptions thrown by any controller across the application
+ * and translates them into standardized, user-friendly JSON HTTP responses.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // SLF4J Logger to record error details in the server console/logs for debugging
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    // 1. Handle Custom "Not Found" Exceptions (e.g., Student ID doesn't exist)
+    /**
+     * Intercepts custom ResourceNotFoundException.
+     * Triggered when a requested entity (e.g., an Employee ID) does not exist in the database.
+     *
+     * @param ex The intercepted ResourceNotFoundException.
+     * @return Standardized ErrorResponse with a 404 (NOT_FOUND) status.
+     */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
         logger.error("Resource Not Found: {}", ex.getMessage());
         return buildErrorResponse(ex, HttpStatus.NOT_FOUND, "Resource Not Found");
     }
 
-    // 2. Handle Database Constraint Violations (e.g., Duplicate Email)
+    /**
+     * Intercepts database constraint violations.
+     * Triggered when attempting to save duplicate unique data (like an email) or breaking foreign keys.
+     *
+     * @param ex The intercepted DataIntegrityViolationException.
+     * @return Standardized ErrorResponse with a 409 (CONFLICT) status.
+     */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDatabaseConstraintViolation(DataIntegrityViolationException ex) {
         logger.error("Database constraint violation: {}", ex.getMessage());
         return buildErrorResponse(ex, HttpStatus.CONFLICT, "Database conflict: Likely a duplicate entry or missing foreign key.");
     }
 
-    // 3. Handle Bad Request / Validation Errors (e.g., Invalid form data)
+    /**
+     * Intercepts validation errors from @Valid / @Validated annotations.
+     * Triggered when the incoming JSON payload fails constraints (e.g., missing @NotNull fields).
+     *
+     * @param ex The intercepted MethodArgumentNotValidException.
+     * @return Standardized ErrorResponse with a 400 (BAD_REQUEST) status.
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         logger.error("Validation error: {}", ex.getMessage());
-        // Extracting just the first validation error message for simplicity
+        // Extracts the specific field error message (e.g., "Email cannot be blank")
         String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
         return buildErrorResponse(new RuntimeException(errorMessage), HttpStatus.BAD_REQUEST, "Validation Failed");
     }
 
-    // 4. Handle Type Mismatch (e.g., passing a String instead of a Long in the URL)
+    /**
+     * Intercepts type mismatch errors in the URI.
+     * Triggered when a client passes the wrong data type in a @PathVariable (e.g., passing a String when an Integer is expected).
+     *
+     * @param ex The intercepted MethodArgumentTypeMismatchException.
+     * @return Standardized ErrorResponse with a 400 (BAD_REQUEST) status.
+     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         logger.error("Type mismatch: {}", ex.getMessage());
         return buildErrorResponse(ex, HttpStatus.BAD_REQUEST, "Invalid parameter type in URL.");
     }
 
-    // 5. Catch-All for anything else (True 500 Internal Server Errors)
+    /**
+     * Catch-All Handler for any unexpected runtime or system exceptions.
+     * Acts as a safety net to prevent raw server stack traces from leaking to the client,
+     * which is a critical security best practice.
+     *
+     * @param ex The generic Exception intercepted.
+     * @return Standardized ErrorResponse with a generic message and a 500 (INTERNAL_SERVER_ERROR) status.
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
-        // Log the full stack trace for developers to fix the bug
+        // Log the full stack trace internally for developers to debug
         logger.error("Unexpected System Error occurred", ex);
 
-        // Hide the stack trace from the user, give a generic message
+        // Return a sanitized response to the external client
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -64,13 +101,21 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // Helper method to keep code DRY
+    /**
+     * Helper method to construct the ErrorResponse object.
+     * Promotes the DRY (Don't Repeat Yourself) principle by centralizing the builder logic.
+     *
+     * @param ex The exception containing the error message.
+     * @param status The HTTP status code to return.
+     * @param customErrorTitle A high-level category or title for the error.
+     * @return A fully populated ResponseEntity.
+     */
     private ResponseEntity<ErrorResponse> buildErrorResponse(Exception ex, HttpStatus status, String customErrorTitle) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(status.value())
                 .error(customErrorTitle)
-                .message(ex.getMessage()) // Send the specific exception message to the client
+                .message(ex.getMessage())
                 .build();
 
         return new ResponseEntity<>(errorResponse, status);
