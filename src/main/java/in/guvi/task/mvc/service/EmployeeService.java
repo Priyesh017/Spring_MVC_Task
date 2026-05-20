@@ -1,6 +1,7 @@
 package in.guvi.task.mvc.service;
 
 import in.guvi.task.mvc.dto.EmployeeRequestDto;
+import in.guvi.task.mvc.exception.ResourceNotFoundException; // Import your custom exception
 import in.guvi.task.mvc.model.Employee;
 import in.guvi.task.mvc.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,8 @@ public class EmployeeService {
     }
 
     public Employee getOneEmployee(String id) {
-
         return employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + id));
     }
 
     public String saveEmployee(EmployeeRequestDto requestDto) {
@@ -32,12 +32,28 @@ public class EmployeeService {
                 .location(requestDto.getLocation())
                 .build();
 
-        Employee saveEmployee = employeeRepository.save(employee);
-
-        return saveEmployee.getEmployeeId();
+        Employee savedEmployee = employeeRepository.save(employee);
+        return savedEmployee.getEmployeeId();
     }
 
-    public List<Employee> updateEmployee(String id, EmployeeRequestDto requestDto) {
+    public List<String> saveAllEmployees(List<EmployeeRequestDto> requestDtos) {
+        List<Employee> employees = requestDtos.stream()
+                .map(dto -> Employee.builder()
+                        .employeeId(dto.getEmployeeId())
+                        .employeeName(dto.getEmployeeName())
+                        .employeeEmail(dto.getEmployeeEmail())
+                        .location(dto.getLocation())
+                        .build())
+                .toList();
+
+        List<Employee> savedEmployees = employeeRepository.saveAll(employees);
+
+        return savedEmployees.stream()
+                .map(Employee::getEmployeeId)
+                .toList();
+    }
+
+    public Employee updateEmployee(String id, EmployeeRequestDto requestDto) {
         Employee fetchEmployee = getOneEmployee(id);
 
         if (requestDto.getEmployeeName() != null && !requestDto.getEmployeeName().isBlank()) {
@@ -52,19 +68,14 @@ public class EmployeeService {
             fetchEmployee.setLocation(requestDto.getLocation());
         }
 
-        employeeRepository.save(fetchEmployee);
-
-        return employeeRepository.findAll();
+        return employeeRepository.save(fetchEmployee);
     }
 
-    public List<Employee> deleteEmployee(String id) {
-
+    public void deleteEmployee(String id) {
         if (!employeeRepository.existsById(id)) {
-            throw new RuntimeException("Employee not found with id: " + id);
+            throw new ResourceNotFoundException("Employee not found with id: " + id);
         }
 
         employeeRepository.deleteById(id);
-
-        return employeeRepository.findAll();
     }
 }

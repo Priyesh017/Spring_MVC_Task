@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Vault</title>
+    <!-- Modern Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<div class="dashboard-container">
+    <!-- LEFT COLUMN: Forms -->
+    <div class="sidebar">
+        <div class="panel form-panel">
+            <div class="panel-header">
+                <h2 id="formTitle">Add Employee</h2>
+                <p class="subtitle">Enter the details for the new team member.</p>
+            </div>
+
+            <div id="messageBox"></div>
+
+            <form id="employeeForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="isUpdate" value="false">
+
+                <div class="form-group">
+                    <label for="employeeId">Employee ID</label>
+                    <input type="text" id="employeeId" placeholder="e.g. EMP001" required>
+                </div>
+                <div class="form-group">
+                    <label for="employeeName">Full Name</label>
+                    <input type="text" id="employeeName" placeholder="e.g. Jane Doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="employeeEmail">Email Address</label>
+                    <input type="email" id="employeeEmail" placeholder="jane@company.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" placeholder="e.g. Kolkata" required>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" id="submitBtn" class="btn-primary">Save Employee</button>
+                    <button type="button" class="btn-secondary" onclick="resetForm()">Clear</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel bulk-panel">
+            <div class="panel-header">
+                <h3>Bulk Insert</h3>
+                <p class="subtitle">Paste a JSON array to import multiple records.</p>
+            </div>
+            <textarea id="bulkJson" rows="4" placeholder='[{"employeeId":"E1","employeeName":"Jane","employeeEmail":"j@x.com","location":"Pune"}]'></textarea>
+            <button type="button" class="btn-outline" onclick="handleBulkInsert()">Execute Import</button>
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Data Table -->
+    <div class="main-content">
+        <div class="panel table-panel">
+            <div class="table-header-container">
+                <div>
+                    <h2>Employee Directory</h2>
+                    <p class="subtitle">Manage your team members and their details.</p>
+                </div>
+                <button onclick="fetchEmployees()" class="btn-secondary">↻ Refresh</button>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Emp ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Location</th>
+                        <th class="text-right">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="employeeTableBody">
+                    <!-- Rows injected by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script src="/js/app.js"></script>
+</body>
+</html>

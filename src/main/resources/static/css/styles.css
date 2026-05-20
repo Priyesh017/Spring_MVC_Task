@@ -1,0 +1,232 @@
+/* --- Modern SaaS Theme --- */
+:root {
+    --primary: #4f46e5;         /* Indigo 600 */
+    --primary-hover: #4338ca;   /* Indigo 700 */
+    --danger: #ef4444;          /* Red 500 */
+    --danger-hover: #dc2626;    /* Red 600 */
+    --bg-color: #f3f4f6;        /* Gray 100 */
+    --surface: #ffffff;         /* White */
+    --text-main: #111827;       /* Gray 900 */
+    --text-muted: #6b7280;      /* Gray 500 */
+    --border: #e5e7eb;          /* Gray 200 */
+    --border-focus: #c7d2fe;    /* Indigo 200 */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+.dashboard-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 30px;
+}
+
+/* --- Panels (Cards) --- */
+.panel {
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    padding: 24px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+
+.panel-header {
+    margin-bottom: 20px;
+}
+
+h2, h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+}
+
+.subtitle {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* --- Forms & Inputs --- */
+.form-group {
+    margin-bottom: 16px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background-color: #f9fafb;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background-color: var(--surface);
+    box-shadow: 0 0 0 3px var(--border-focus);
+}
+
+/* --- Buttons --- */
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+button {
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover { background-color: var(--primary-hover); }
+
+.btn-secondary {
+    background-color: var(--surface);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:hover { background-color: #f9fafb; }
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-outline:hover {
+    background-color: #eff6ff;
+}
+
+/* --- Table --- */
+.table-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+}
+
+th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border);
+}
+
+td {
+    padding: 16px;
+    font-size: 0.875rem;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border);
+}
+
+tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.text-right { text-align: right; }
+.actions { text-align: right; }
+
+/* Table Action Buttons */
+.actions button {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    margin-left: 6px;
+}
+
+.actions button:first-child {
+    background-color: #e0e7ff;
+    color: var(--primary-hover);
+}
+.actions button:first-child:hover { background-color: #c7d2fe; }
+
+.actions button.danger {
+    background-color: #fee2e2;
+    color: var(--danger-hover);
+}
+.actions button.danger:hover { background-color: #fecaca; }
+
+/* --- Messages --- */
+#messageBox {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: none;
+}
+
+.success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #34d399;
+}
+
+.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #f87171;
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    .dashboard-container {
+        grid-template-columns: 1fr;
+    }
+}
