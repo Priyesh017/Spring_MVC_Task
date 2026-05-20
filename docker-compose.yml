@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  # --- MongoDB Setup ---
+  mongodb:
+    image: mongo:latest
+    container_name: guvi_mvc_task
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+# These volumes prevent your data from being deleted when you stop the containers
+volumes:
+  mongo_data:
